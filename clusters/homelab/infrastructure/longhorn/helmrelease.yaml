@@ -24,4 +24,5 @@ spec:
     persistence:
       defaultClass: true
       defaultClassReplicaCount: 2
-    # add any other custom values you currently have
+    csi:
+      kubeletRootDir: /var/lib/rancher/k3s/agent/kubelet

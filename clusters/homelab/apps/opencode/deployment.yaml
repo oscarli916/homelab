@@ -29,7 +29,9 @@ spec:
                 cp /etc/git-secret/ssh-privatekey /root/.ssh/id_ed25519
                 chmod 600 /root/.ssh/id_ed25519
                 ssh-keyscan -t ed25519 github.com >> /root/.ssh/known_hosts 2>/dev/null
-                git clone git@github.com:oscarli916/homelab.git /workspace
+                git clone git@github.com:oscarli916/homelab.git /tmp/repo
+                cp -a /tmp/repo/. /workspace/
+                rm -rf /tmp/repo
                 echo "Repository cloned successfully"
               else
                 echo "Repository already exists, skipping clone"

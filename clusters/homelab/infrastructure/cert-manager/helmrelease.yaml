@@ -16,9 +16,8 @@ spec:
   targetNamespace: cert-manager
   install:
     createNamespace: true
-    crds: Create
-  upgrade:
-    crds: CreateReplace
   values:
+    crds:
+      enabled: true
     prometheus:
       enabled: false

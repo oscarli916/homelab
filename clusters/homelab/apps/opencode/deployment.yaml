@@ -44,7 +44,7 @@ spec:
               readOnly: true
       containers:
         - name: opencode
-          image: ghcr.io/anomalyco/opencode:latest
+          image: oscarli916/opencode-custom:latest
           args:
             - web
             - --hostname

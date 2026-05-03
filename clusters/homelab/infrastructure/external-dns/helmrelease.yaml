@@ -1,0 +1,65 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: external-dns
+  namespace: flux-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: external-dns
+      version: "1.21.1"
+      sourceRef:
+        kind: HelmRepository
+        name: external-dns
+        namespace: flux-system
+  targetNamespace: external-dns
+  install:
+    createNamespace: true
+  values:
+    sources:
+      - ingress
+    domainFilters:
+      - home.arpa
+    txtOwnerId: homelab
+    policy: upsert-only
+    provider:
+      name: webhook
+      webhook:
+        image:
+          repository: ghcr.io/muhlba91/external-dns-provider-adguard
+          tag: v11.1.1
+        service:
+          port: 8888
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        env:
+          - name: ADGUARD_URL
+            valueFrom:
+              secretKeyRef:
+                name: adguard-configuration
+                key: url
+          - name: ADGUARD_USER
+            valueFrom:
+              secretKeyRef:
+                name: adguard-configuration
+                key: user
+          - name: ADGUARD_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: adguard-configuration
+                key: password
+          - name: LOG_LEVEL
+            value: info
+          - name: DRY_RUN
+            value: "false"

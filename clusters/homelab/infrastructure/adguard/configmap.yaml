@@ -52,7 +52,15 @@ data:
       safe_search:
         enabled: false
       filters_update_interval: 24
-      rewrites: []
+      rewrites:
+        - domain: adguard.home.arpa
+          answer: 192.168.0.11
+        - domain: k3s-01.home.arpa
+          answer: 192.168.0.11
+        - domain: k3s-02.home.arpa
+          answer: 192.168.0.12
+        - domain: k3s-03.home.arpa
+          answer: 192.168.0.13
     filters:
       - enabled: true
         url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt

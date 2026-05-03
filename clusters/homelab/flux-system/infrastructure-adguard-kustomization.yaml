@@ -1,16 +1,14 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: apps
+  name: infrastructure-adguard
   namespace: flux-system
 spec:
   dependsOn:
-    - name: infrastructure-sealed-secrets
-    - name: infrastructure-tailscale
+    - name: infrastructure-cert-manager-issuers
     - name: infrastructure-longhorn
-    - name: infrastructure-adguard
   interval: 10m0s
-  path: ./clusters/homelab/apps
+  path: ./clusters/homelab/infrastructure/adguard
   prune: true
   sourceRef:
     kind: GitRepository

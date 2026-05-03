@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adguard-home
+  namespace: adguard
+  annotations:
+    cert-manager.io/cluster-issuer: home-arpa-ca
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: adguard.home.arpa
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: adguard-web
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - adguard.home.arpa
+      secretName: adguard-home-arpa-tls

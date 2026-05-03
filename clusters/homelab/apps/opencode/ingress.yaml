@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: opencode
+  namespace: opencode
+  annotations:
+    cert-manager.io/cluster-issuer: home-arpa-ca
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: opencode.home.arpa
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: opencode-web
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - opencode.home.arpa
+      secretName: opencode-home-arpa-tls

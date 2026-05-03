@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: opencode-tailscale
+  namespace: opencode
+spec:
+  ingressClassName: tailscale
+  rules:
+    - host: opencode
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: opencode-web
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - opencode

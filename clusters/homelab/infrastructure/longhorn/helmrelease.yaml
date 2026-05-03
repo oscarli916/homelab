@@ -25,4 +25,4 @@ spec:
       defaultClass: true
       defaultClassReplicaCount: 2
     csi:
-      kubeletRootDir: /var/lib/rancher/k3s/agent/kubelet
+      kubeletRootDir: /var/lib/kubelet

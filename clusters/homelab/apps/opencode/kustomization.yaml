@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   - sealed-secrets.yaml
   - pvc.yaml
+  - pvc-data.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml

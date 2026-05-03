@@ -74,6 +74,18 @@ spec:
               mountPath: /root/.ssh/id_ed25519
               subPath: ssh-privatekey
               readOnly: true
+            - name: opencode-data
+              mountPath: /root/.config/opencode
+              subPath: config
+            - name: opencode-data
+              mountPath: /root/.local/share/opencode
+              subPath: share
+            - name: opencode-data
+              mountPath: /root/.local/state/opencode
+              subPath: state
+            - name: opencode-data
+              mountPath: /root/.cache/opencode
+              subPath: cache
           resources:
             requests:
               cpu: 200m
@@ -102,3 +114,6 @@ spec:
                 path: ssh-privatekey
                 mode: 0600
             defaultMode: 0600
+        - name: opencode-data
+          persistentVolumeClaim:
+            claimName: opencode-data

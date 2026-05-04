@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage
+  namespace: homepage
+  labels:
+    app.kubernetes.io/name: homepage
+data:
+  kubernetes.yaml: |
+    mode: cluster
+
+  settings.yaml: |
+    title: Homelab Dashboard
+    favicon: https://github.com/gethomepage/homepage/raw/main/public/homepage.png
+    headerStyle: clean
+    layout:
+      Infrastructure:
+        style: row
+        columns: 3
+      Apps:
+        style: row
+        columns: 3
+
+  services.yaml: |
+    - Infrastructure:
+        - AdGuard Home:
+            href: https://adguard.home.arpa
+            description: DNS ad-blocking
+            icon: adguard-home
+        - Longhorn:
+            href: https://longhorn.home.arpa
+            description: Distributed storage
+            icon: longhorn
+        - Cert Manager:
+            description: Certificate management
+            icon: cert-manager
+    - Apps:
+        - OpenCode:
+            href: https://opencode.home.arpa
+            description: Development tool
+            icon: code
+
+  widgets.yaml: |
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+
+  bookmarks.yaml: |
+    []
+
+  docker.yaml: |
+    []

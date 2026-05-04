@@ -16,7 +16,7 @@ spec:
     groupInterval: 5m
     repeatInterval: 4h
     routes:
-      - receiver: null
+      - receiver: "null"
         matchers:
           - name: alertname
             value: Watchdog
@@ -44,4 +44,4 @@ spec:
             {{- if .CommonLabels.namespace }}
             Namespace: {{ .CommonLabels.namespace }}
             {{- end }}
-    - name: null
+    - name: "null"

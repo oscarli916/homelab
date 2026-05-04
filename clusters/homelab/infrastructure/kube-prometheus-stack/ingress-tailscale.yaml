@@ -1,0 +1,65 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-tailscale
+  namespace: monitoring
+spec:
+  ingressClassName: tailscale
+  rules:
+    - host: grafana
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kube-prometheus-stack-grafana
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - grafana
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prometheus-tailscale
+  namespace: monitoring
+spec:
+  ingressClassName: tailscale
+  rules:
+    - host: prometheus
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kube-prometheus-stack-prometheus
+                port:
+                  number: 9090
+  tls:
+    - hosts:
+        - prometheus
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alertmanager-tailscale
+  namespace: monitoring
+spec:
+  ingressClassName: tailscale
+  rules:
+    - host: alertmanager
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kube-prometheus-stack-alertmanager
+                port:
+                  number: 9093
+  tls:
+    - hosts:
+        - alertmanager

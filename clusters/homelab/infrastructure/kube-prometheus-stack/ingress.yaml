@@ -1,0 +1,74 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-home
+  namespace: monitoring
+  annotations:
+    cert-manager.io/cluster-issuer: home-arpa-ca
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: grafana.home.arpa
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kube-prometheus-stack-grafana
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - grafana.home.arpa
+      secretName: grafana-home-arpa-tls
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prometheus-home
+  namespace: monitoring
+  annotations:
+    cert-manager.io/cluster-issuer: home-arpa-ca
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: prometheus.home.arpa
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kube-prometheus-stack-prometheus
+                port:
+                  number: 9090
+  tls:
+    - hosts:
+        - prometheus.home.arpa
+      secretName: prometheus-home-arpa-tls
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alertmanager-home
+  namespace: monitoring
+  annotations:
+    cert-manager.io/cluster-issuer: home-arpa-ca
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: alertmanager.home.arpa
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kube-prometheus-stack-alertmanager
+                port:
+                  number: 9093
+  tls:
+    - hosts:
+        - alertmanager.home.arpa
+      secretName: alertmanager-home-arpa-tls

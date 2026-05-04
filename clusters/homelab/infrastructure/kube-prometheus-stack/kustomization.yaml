@@ -4,7 +4,5 @@ resources:
   - namespace.yaml
   - helmrepo.yaml
   - helmrelease.yaml
-  - sealed-secrets-telegram.yaml
-  - alertmanagerconfig-telegram.yaml
   - ingress.yaml
   - ingress-tailscale.yaml

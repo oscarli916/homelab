@@ -26,6 +26,8 @@ spec:
     authentik:
       existingSecret:
         secretName: authentik-config
+      postgresql:
+        host: authentik-authentik-postgresql
       error_reporting:
         enabled: false
     server:

@@ -29,7 +29,6 @@ spec:
     grafana:
       deploymentStrategy:
         type: Recreate
-        rollingUpdate: null
       envValueFrom:
         GF_AUTH_GENERIC_OAUTH_CLIENT_ID:
           secretKeyRef:

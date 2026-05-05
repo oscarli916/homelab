@@ -5,6 +5,12 @@ metadata:
   namespace: longhorn-system
   annotations:
     cert-manager.io/cluster-issuer: home-arpa-ca
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: Longhorn
+    gethomepage.dev/description: Distributed storage
+    gethomepage.dev/group: Infrastructure
+    gethomepage.dev/icon: longhorn
+    gethomepage.dev/href: https://longhorn.home.arpa
 spec:
   ingressClassName: traefik
   rules:

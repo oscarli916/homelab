@@ -5,6 +5,12 @@ metadata:
   namespace: opencode
   annotations:
     cert-manager.io/cluster-issuer: home-arpa-ca
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: OpenCode
+    gethomepage.dev/description: Development tool
+    gethomepage.dev/group: Apps
+    gethomepage.dev/icon: code
+    gethomepage.dev/href: https://opencode.home.arpa
 spec:
   ingressClassName: traefik
   rules:

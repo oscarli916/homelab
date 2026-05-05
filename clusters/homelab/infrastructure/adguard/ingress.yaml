@@ -5,6 +5,12 @@ metadata:
   namespace: adguard
   annotations:
     cert-manager.io/cluster-issuer: home-arpa-ca
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: AdGuard Home
+    gethomepage.dev/description: DNS ad-blocking
+    gethomepage.dev/group: Infrastructure
+    gethomepage.dev/icon: adguard-home
+    gethomepage.dev/href: https://adguard.home.arpa
 spec:
   ingressClassName: traefik
   rules:

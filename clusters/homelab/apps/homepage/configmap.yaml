@@ -17,28 +17,15 @@ data:
       Infrastructure:
         style: row
         columns: 3
+      Monitoring:
+        style: row
+        columns: 3
       Apps:
         style: row
         columns: 3
 
   services.yaml: |
-    - Infrastructure:
-        - AdGuard Home:
-            href: https://adguard.home.arpa
-            description: DNS ad-blocking
-            icon: adguard-home
-        - Longhorn:
-            href: https://longhorn.home.arpa
-            description: Distributed storage
-            icon: longhorn
-        - Cert Manager:
-            description: Certificate management
-            icon: cert-manager
-    - Apps:
-        - OpenCode:
-            href: https://opencode.home.arpa
-            description: Development tool
-            icon: code
+    []
 
   widgets.yaml: |
     - kubernetes:

@@ -13,7 +13,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: authentik-server
+                name: authentik-authentik-server
                 port:
                   number: 80
   tls:

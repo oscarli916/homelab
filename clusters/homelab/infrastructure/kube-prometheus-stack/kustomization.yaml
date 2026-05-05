@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - helmrepo.yaml
+  - sealed-secrets-grafana-oauth.yaml
   - helmrelease.yaml
   - ingress.yaml
   - ingress-tailscale.yaml

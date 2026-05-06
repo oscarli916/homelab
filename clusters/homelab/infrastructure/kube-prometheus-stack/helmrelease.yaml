@@ -60,7 +60,7 @@ spec:
           api_url: https://authentik.home.arpa/application/o/userinfo/
           email_attribute_path: email
           signout_redirect_url: https://authentik.home.arpa/application/o/grafana/end-session/
-          role_attribute_path: contains(groups[*], 'admin') && 'Admin' || 'Viewer'
+          role_attribute_path: contains(groups[*], 'authentik Admins') && 'Admin' || 'Viewer'
           allow_assign_grafana_admin: true
           auto_login: false
       persistence:

@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - helmrepo.yaml
+  - configmap-ca.yaml
   - sealed-secrets-grafana-oauth.yaml
   - helmrelease.yaml
   - ingress.yaml

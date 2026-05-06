@@ -57,7 +57,7 @@ spec:
           scopes: openid profile email
           auth_url: https://authentik.home.arpa/application/o/authorize/
           token_url: https://authentik.home.arpa/application/o/token/
-          api_url: https://authentik.home.arpa/application/o/userinfo/
+          api_url: https://authentik.home.arpa/application/o/userinfo
           signout_redirect_url: https://authentik.home.arpa/application/o/grafana/end-session/
           role_attribute_path: contains(groups[*], 'admin') && 'Admin' || 'Viewer'
           allow_assign_grafana_admin: true

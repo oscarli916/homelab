@@ -44,6 +44,12 @@ spec:
       error_reporting:
         enabled: false
     server:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
       ingress:
         enabled: true
         ingressClassName: traefik
@@ -69,3 +75,10 @@ spec:
           enabled: true
           storageClass: longhorn
           size: 2Gi
+    worker:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 768Mi
+        limits:
+          memory: 1536Mi

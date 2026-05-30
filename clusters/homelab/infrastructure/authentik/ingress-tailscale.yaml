@@ -3,6 +3,13 @@ kind: Ingress
 metadata:
   name: authentik-tailscale
   namespace: authentik
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: Authentik
+    gethomepage.dev/description: Identity provider / SSO
+    gethomepage.dev/group: Infrastructure
+    gethomepage.dev/icon: authentik
+    gethomepage.dev/href: https://authentik.home.arpa
 spec:
   ingressClassName: tailscale
   rules:

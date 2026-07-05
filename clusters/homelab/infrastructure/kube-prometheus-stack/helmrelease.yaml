@@ -75,8 +75,8 @@ spec:
       ingress:
         enabled: false
       prometheusSpec:
-        retention: 15d
-        retentionSize: 16GiB
+        retention: 7d
+        retentionSize: 8GiB
         storageSpec:
           volumeClaimTemplate:
             spec:

@@ -58,7 +58,7 @@ spec:
               readOnly: true
       containers:
         - name: opencode
-          image: oscarli916/opencode-custom:latest
+          image: oscarli916/opencode-custom:1.14.33-pty
           args:
             - web
             - --hostname

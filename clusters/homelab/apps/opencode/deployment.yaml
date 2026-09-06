@@ -24,17 +24,31 @@ spec:
             - sh
             - -c
             - |
-              if [ ! -d /workspace/.git ]; then
-                mkdir -p /root/.ssh
-                cp /etc/git-secret/ssh-privatekey /root/.ssh/id_ed25519
-                chmod 600 /root/.ssh/id_ed25519
-                ssh-keyscan -t ed25519 github.com >> /root/.ssh/known_hosts 2>/dev/null
-                git clone git@github.com:oscarli916/homelab.git /tmp/repo
-                cp -a /tmp/repo/. /workspace/
-                rm -rf /tmp/repo
-                echo "Repository cloned successfully"
+              mkdir -p /root/.ssh
+              cp /etc/git-secret/ssh-privatekey /root/.ssh/id_ed25519
+              chmod 600 /root/.ssh/id_ed25519
+              ssh-keyscan -t ed25519 github.com >> /root/.ssh/known_hosts 2>/dev/null
+
+              if [ -d /workspace/.git ] && [ ! -d /workspace/homelab/.git ]; then
+                mkdir -p /workspace/homelab
+                for path in /workspace/* /workspace/.[!.]* /workspace/..?*; do
+                  [ -e "$path" ] || continue
+                  [ "$path" = /workspace/homelab ] && continue
+                  mv "$path" /workspace/homelab/
+                done
+                echo "Existing homelab repository moved to /workspace/homelab"
+              fi
+
+              if [ ! -d /workspace/homelab/.git ]; then
+                git clone git@github.com:oscarli916/homelab.git /workspace/homelab
               else
-                echo "Repository already exists, skipping clone"
+                echo "Homelab repository already exists, skipping clone"
+              fi
+
+              if [ ! -d /workspace/lync-web/.git ]; then
+                git clone git@github.com:oscarli916/lync-web.git /workspace/lync-web
+              else
+                echo "Lync Web repository already exists, skipping clone"
               fi
           volumeMounts:
             - name: workspace
@@ -55,7 +69,7 @@ spec:
             - name: http
               containerPort: 3000
               protocol: TCP
-          workingDir: /workspace
+          workingDir: /workspace/homelab
           env:
             - name: OPENCODE_SERVER_USERNAME
               valueFrom:

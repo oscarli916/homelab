@@ -56,6 +56,36 @@ spec:
             - name: git-ssh
               mountPath: /etc/git-secret
               readOnly: true
+        - name: sync-opencode-config
+          image: alpine/git:2.47.2
+          env:
+            - name: DOTFILES_REVISION
+              value: "5415a3d85065a31c185f32d45c4f3b3517798184"
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              mkdir -p /config/skills /config/commands
+              # Optional config must not prevent the remote server from starting.
+              if timeout 90 sh -ec '
+                git init /config/repository
+                git -C /config/repository config remote.origin.url https://github.com/oscarli916/dotfiles.git
+                git -C /config/repository fetch --depth=1 origin "$DOTFILES_REVISION"
+                git -C /config/repository checkout --detach "$DOTFILES_REVISION"
+                test -d /config/repository/.config/opencode/skills
+                test -d /config/repository/.config/opencode/commands
+                cp -R /config/repository/.config/opencode/skills/. /config/skills/
+                cp -R /config/repository/.config/opencode/commands/. /config/commands/
+              '; then
+                echo "Loaded OpenCode skills and commands from $DOTFILES_REVISION"
+              else
+                rm -rf /config/skills/* /config/skills/.[!.]* /config/skills/..?* /config/commands/* /config/commands/.[!.]* /config/commands/..?*
+                echo "WARNING: Dotfiles sync failed; starting OpenCode without synced skills and commands" >&2
+              fi
+          volumeMounts:
+            - name: opencode-dotfiles
+              mountPath: /config
       containers:
         - name: opencode
           image: oscarli916/opencode-custom:1.14.33-pty
@@ -91,6 +121,14 @@ spec:
             - name: opencode-data
               mountPath: /root/.config/opencode
               subPath: config
+            - name: opencode-dotfiles
+              mountPath: /root/.config/opencode/skills
+              subPath: skills
+              readOnly: true
+            - name: opencode-dotfiles
+              mountPath: /root/.config/opencode/commands
+              subPath: commands
+              readOnly: true
             - name: opencode-data
               mountPath: /root/.local/share/opencode
               subPath: share
@@ -117,6 +155,8 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
       volumes:
+        - name: opencode-dotfiles
+          emptyDir: {}
         - name: workspace
           persistentVolumeClaim:
             claimName: opencode-workspace

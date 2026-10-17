@@ -50,6 +50,18 @@ spec:
               else
                 echo "Lync Web repository already exists, skipping clone"
               fi
+
+              if [ ! -d /workspace/lync-auth/.git ]; then
+                git clone git@github.com:oscarli916/lync-auth.git /workspace/lync-auth
+              else
+                echo "Lync Auth repository already exists, skipping clone"
+              fi
+
+              if [ ! -d /workspace/lync-transfer/.git ]; then
+                git clone git@github.com:oscarli916/lync-transfer.git /workspace/lync-transfer
+              else
+                echo "Lync Transfer repository already exists, skipping clone"
+              fi
           volumeMounts:
             - name: workspace
               mountPath: /workspace

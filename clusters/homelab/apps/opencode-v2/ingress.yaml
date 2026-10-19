@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: opencode-v2
+  namespace: opencode
+  annotations:
+    cert-manager.io/cluster-issuer: home-arpa-ca
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: OpenCode V2
+    gethomepage.dev/description: Development tool (v2)
+    gethomepage.dev/group: Apps
+    gethomepage.dev/icon: code
+    gethomepage.dev/href: https://opencode-v2.home.arpa
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: opencode-v2.home.arpa
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: opencode-v2-web
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - opencode-v2.home.arpa
+      secretName: opencode-v2-home-arpa-tls

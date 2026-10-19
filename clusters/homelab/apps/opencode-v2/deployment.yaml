@@ -1,0 +1,158 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opencode-v2
+  namespace: opencode
+  labels:
+    app.kubernetes.io/name: opencode-v2
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opencode-v2
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: opencode-v2
+    spec:
+      initContainers:
+        - name: git-clone
+          image: alpine/git:2.47.2
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              mkdir -p /root/.ssh
+              cp /etc/git-secret/ssh-privatekey /root/.ssh/id_ed25519
+              chmod 600 /root/.ssh/id_ed25519
+              ssh-keyscan -t ed25519 github.com >> /root/.ssh/known_hosts 2>/dev/null
+
+              for repository in homelab lync-web lync-auth lync-transfer; do
+                if [ ! -d "/workspace/$repository/.git" ]; then
+                  git clone "git@github.com:oscarli916/$repository.git" "/workspace/$repository"
+                else
+                  echo "$repository repository already exists, skipping clone"
+                fi
+              done
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+            - name: git-ssh-home
+              mountPath: /root/.ssh
+            - name: git-ssh
+              mountPath: /etc/git-secret
+              readOnly: true
+        - name: sync-opencode-config
+          image: alpine/git:2.47.2
+          env:
+            - name: DOTFILES_REVISION
+              value: "5415a3d85065a31c185f32d45c4f3b3517798184"
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              mkdir -p /config/skills /config/commands
+              # Optional config must not prevent the remote server from starting.
+              if timeout 90 sh -ec '
+                git init /config/repository
+                git -C /config/repository config remote.origin.url https://github.com/oscarli916/dotfiles.git
+                git -C /config/repository fetch --depth=1 origin "$DOTFILES_REVISION"
+                git -C /config/repository checkout --detach "$DOTFILES_REVISION"
+                test -d /config/repository/.config/opencode/skills
+                test -d /config/repository/.config/opencode/commands
+                cp -R /config/repository/.config/opencode/skills/. /config/skills/
+                cp -R /config/repository/.config/opencode/commands/. /config/commands/
+              '; then
+                echo "Loaded OpenCode skills and commands from $DOTFILES_REVISION"
+              else
+                rm -rf /config/skills/* /config/skills/.[!.]* /config/skills/..?* /config/commands/* /config/commands/.[!.]* /config/commands/..?*
+                echo "WARNING: Dotfiles sync failed; starting OpenCode without synced skills and commands" >&2
+              fi
+          volumeMounts:
+            - name: opencode-dotfiles
+              mountPath: /config
+      containers:
+        - name: opencode
+          image: oscarli916/opencode-custom:2.0.32
+          args:
+            - serve
+            - --hostname
+            - "0.0.0.0"
+            - --port
+            - "3000"
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          workingDir: /workspace/homelab
+          env:
+            - name: OPENCODE_SERVER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: opencode-secrets
+                  key: server-password
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+            - name: git-ssh-home
+              mountPath: /root/.ssh
+              readOnly: true
+            - name: opencode-data
+              mountPath: /root/.config/opencode
+              subPath: config
+            - name: opencode-dotfiles
+              mountPath: /root/.config/opencode/skills
+              subPath: skills
+              readOnly: true
+            - name: opencode-dotfiles
+              mountPath: /root/.config/opencode/commands
+              subPath: commands
+              readOnly: true
+            - name: opencode-data
+              mountPath: /root/.local/share/opencode
+              subPath: share
+            - name: opencode-data
+              mountPath: /root/.local/state/opencode
+              subPath: state
+            - name: opencode-data
+              mountPath: /root/.cache/opencode
+              subPath: cache
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: opencode-dotfiles
+          emptyDir: {}
+        - name: git-ssh-home
+          emptyDir: {}
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: opencode-v2-workspace
+        - name: git-ssh
+          secret:
+            secretName: opencode-secrets
+            items:
+              - key: ssh-privatekey
+                path: ssh-privatekey
+                mode: 0600
+            defaultMode: 0600
+        - name: opencode-data
+          persistentVolumeClaim:
+            claimName: opencode-v2-data

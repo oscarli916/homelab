@@ -112,17 +112,6 @@ spec:
               containerPort: 3000
               protocol: TCP
           workingDir: /workspace/homelab
-          env:
-            - name: OPENCODE_SERVER_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: opencode-secrets
-                  key: server-username
-            - name: OPENCODE_SERVER_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: opencode-secrets
-                  key: server-password
           volumeMounts:
             - name: workspace
               mountPath: /workspace

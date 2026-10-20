@@ -100,7 +100,7 @@ spec:
               mountPath: /config
       containers:
         - name: opencode
-          image: oscarli916/opencode-custom:1.14.33-pty
+          image: oscarli916/opencode-custom:1.14.33-pty-gh
           args:
             - web
             - --hostname
@@ -119,6 +119,9 @@ spec:
               mountPath: /root/.ssh/id_ed25519
               subPath: ssh-privatekey
               readOnly: true
+            - name: opencode-data
+              mountPath: /root/.config/gh
+              subPath: gh
             - name: opencode-data
               mountPath: /root/.config/opencode
               subPath: config

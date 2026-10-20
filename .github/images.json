@@ -1,0 +1,10 @@
+[
+  {
+    "name": "opencode",
+    "context": "clusters/homelab/apps/opencode",
+    "dockerfile": "clusters/homelab/apps/opencode/Dockerfile",
+    "image": "oscarli916/opencode-custom",
+    "tag": "1.14.33-pty-gh",
+    "platforms": "linux/amd64"
+  }
+]

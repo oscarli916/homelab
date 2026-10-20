@@ -1,0 +1,95 @@
+name: Build images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/Dockerfile'
+      - '**/Dockerfile.*'
+  pull_request:
+    branches: [main]
+    paths:
+      - '**/Dockerfile'
+      - '**/Dockerfile.*'
+
+permissions:
+  contents: read
+
+jobs:
+  select:
+    name: Select changed images
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.select.outputs.matrix }}
+      has-images: ${{ steps.select.outputs.has-images }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Select allowlisted images with changed Dockerfiles
+        id: select
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+        shell: python
+        run: |
+          import json
+          import os
+          import subprocess
+
+          base = os.environ["BASE_SHA"]
+          head = os.environ["HEAD_SHA"]
+          if os.environ["EVENT_NAME"] == "pull_request":
+              base = subprocess.check_output(
+                  ["git", "merge-base", base, head]
+              ).decode().strip()
+          if base == "0" * 40:
+              base = subprocess.check_output(
+                  ["git", "hash-object", "-t", "tree", "--stdin"], input=b""
+              ).decode().strip()
+          changed = set(subprocess.check_output(
+              ["git", "diff", "--no-renames", "--name-only", "--diff-filter=ACMT", "-z", base, head]
+          ).decode().rstrip("\0").split("\0"))
+          with open(".github/images.json") as source:
+              images = json.load(source)
+          selected = [image for image in images if image["dockerfile"] in changed]
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write("matrix=" + json.dumps({"include": selected}) + "\n")
+              output.write("has-images=" + str(bool(selected)).lower() + "\n")
+          print("Selected images: " + ", ".join(image["name"] for image in selected))
+
+  build:
+    name: Build ${{ matrix.name }}
+    needs: select
+    if: needs.select.outputs.has-images == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.select.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-qemu-action@v3
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and publish
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          platforms: ${{ matrix.platforms }}
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ matrix.image }}:${{ matrix.tag }}
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}

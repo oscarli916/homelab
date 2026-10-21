@@ -70,9 +70,6 @@ spec:
               readOnly: true
         - name: sync-opencode-config
           image: alpine/git:2.47.2
-          env:
-            - name: DOTFILES_REVISION
-              value: "5415a3d85065a31c185f32d45c4f3b3517798184"
           command:
             - sh
             - -c
@@ -83,14 +80,14 @@ spec:
               if timeout 90 sh -ec '
                 git init /config/repository
                 git -C /config/repository config remote.origin.url https://github.com/oscarli916/dotfiles.git
-                git -C /config/repository fetch --depth=1 origin "$DOTFILES_REVISION"
-                git -C /config/repository checkout --detach "$DOTFILES_REVISION"
+                git -C /config/repository fetch --depth=1 origin HEAD
+                git -C /config/repository checkout --detach FETCH_HEAD
                 test -d /config/repository/.config/opencode/skills
                 test -d /config/repository/.config/opencode/commands
                 cp -R /config/repository/.config/opencode/skills/. /config/skills/
                 cp -R /config/repository/.config/opencode/commands/. /config/commands/
               '; then
-                echo "Loaded OpenCode skills and commands from $DOTFILES_REVISION"
+                echo "Loaded OpenCode skills and commands from $(git -C /config/repository rev-parse HEAD)"
               else
                 rm -rf /config/skills/* /config/skills/.[!.]* /config/skills/..?* /config/commands/* /config/commands/.[!.]* /config/commands/..?*
                 echo "WARNING: Dotfiles sync failed; starting OpenCode without synced skills and commands" >&2

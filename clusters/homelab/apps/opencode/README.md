@@ -16,6 +16,19 @@ The workflow does not commit deployment changes or restart pods itself.
 The image currently builds for `linux/amd64`. The downloaded PTY library is
 architecture-specific, so supporting ARM also requires changing that download.
 
+## Skills and commands
+
+Each new pod fetches the latest commit on the dotfiles repository's default branch
+and copies its skills and commands. The init container logs the loaded commit SHA.
+Push changes to `oscarli916/dotfiles`, then replace the pod to refresh them:
+
+```sh
+kubectl -n opencode rollout restart deployment/opencode
+```
+
+Running pods do not refresh automatically. No image rebuild is needed. If the
+sync fails or exceeds 90 seconds, the pod starts without synced skills or commands.
+
 ## One-time GitHub login
 
 After the new image is deployed, run this from a machine with cluster access:

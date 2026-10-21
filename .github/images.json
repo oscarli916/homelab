@@ -6,5 +6,13 @@
     "image": "oscarli916/opencode-custom",
     "tag": "1.14.33-pty-gh",
     "platforms": "linux/amd64"
+  },
+  {
+    "name": "opencode-v2",
+    "context": "clusters/homelab/apps/opencode-v2",
+    "dockerfile": "clusters/homelab/apps/opencode-v2/Dockerfile",
+    "image": "oscarli916/opencode-custom",
+    "tag": "2.0.32-gh",
+    "platforms": "linux/amd64"
   }
 ]

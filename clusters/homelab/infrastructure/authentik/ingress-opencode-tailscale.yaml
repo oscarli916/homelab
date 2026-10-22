@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: opencode-auth-tailscale
+  namespace: authentik
+spec:
+  ingressClassName: tailscale
+  rules:
+    - host: opencode-auth
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: authentik-authentik-server
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - opencode-auth

@@ -8,7 +8,7 @@ Do not add this directory to `apps/kustomization.yaml` as well.
 
 - Uses the existing `opencode` namespace and `opencode-secrets` Secret.
 - Uses new `opencode-v2-workspace` and `opencode-v2-data` Longhorn PVCs.
-- Clones the same four repositories into its own workspace.
+- Clones `homelab`, `lync-web`, `lync-auth`, `lync-transfer`, and `algo-trading` into its own workspace.
 - Loads skills and commands from the latest dotfiles default-branch commit at pod startup, like v1.
 - Does not copy or mount v1 configuration, provider credentials, sessions, or workspace data.
 - Depends on the existing `apps` Flux Kustomization for the namespace and SealedSecret.

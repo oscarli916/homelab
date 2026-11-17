@@ -30,7 +30,7 @@ spec:
               chmod 600 /root/.ssh/id_ed25519
               ssh-keyscan -t ed25519 github.com >> /root/.ssh/known_hosts 2>/dev/null
 
-              for repository in homelab lync-web lync-auth lync-transfer; do
+              for repository in homelab lync-web lync-auth lync-transfer algo-trading; do
                 if [ ! -d "/workspace/$repository/.git" ]; then
                   git clone "git@github.com:oscarli916/$repository.git" "/workspace/$repository"
                 else

@@ -53,6 +53,7 @@ spec:
             - |
               set -eu
               mkdir -p /config/skills /config/commands
+              : > /config/AGENTS.md
               # Optional config must not prevent the remote server from starting.
               if timeout 90 sh -ec '
                 git init /config/repository
@@ -63,11 +64,13 @@ spec:
                 test -d /config/repository/.config/opencode/commands
                 cp -R /config/repository/.config/opencode/skills/. /config/skills/
                 cp -R /config/repository/.config/opencode/commands/. /config/commands/
+                cp /config/repository/.config/opencode/AGENTS.md /config/AGENTS.md
               '; then
-                echo "Loaded OpenCode skills and commands from $(git -C /config/repository rev-parse HEAD)"
+                echo "Loaded OpenCode skills, commands, and global instructions from $(git -C /config/repository rev-parse HEAD)"
               else
                 rm -rf /config/skills/* /config/skills/.[!.]* /config/skills/..?* /config/commands/* /config/commands/.[!.]* /config/commands/..?*
-                echo "WARNING: Dotfiles sync failed; starting OpenCode without synced skills and commands" >&2
+                : > /config/AGENTS.md
+                echo "WARNING: Dotfiles sync failed; starting OpenCode without synced skills, commands, or global instructions" >&2
               fi
           volumeMounts:
             - name: opencode-dotfiles
@@ -104,6 +107,10 @@ spec:
             - name: opencode-data
               mountPath: /root/.config/opencode
               subPath: config
+            - name: opencode-dotfiles
+              mountPath: /root/.config/opencode/AGENTS.md
+              subPath: AGENTS.md
+              readOnly: true
             - name: opencode-dotfiles
               mountPath: /root/.config/opencode/skills
               subPath: skills

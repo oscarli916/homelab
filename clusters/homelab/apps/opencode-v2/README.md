@@ -9,7 +9,7 @@ Do not add this directory to `apps/kustomization.yaml` as well.
 - Uses the existing `opencode` namespace and `opencode-secrets` Secret.
 - Uses new `opencode-v2-workspace` and `opencode-v2-data` Longhorn PVCs.
 - Clones `homelab`, `lync-web`, `lync-auth`, `lync-transfer`, and `algo-trading` into its own workspace.
-- Loads skills and commands from the latest dotfiles default-branch commit at pod startup, like v1.
+- Loads skills, commands, and global `AGENTS.md` from the latest dotfiles default-branch commit at pod startup.
 - Does not copy or mount v1 configuration, provider credentials, sessions, or workspace data.
 - Depends on the existing `apps` Flux Kustomization for the namespace and SealedSecret.
 
@@ -39,10 +39,12 @@ The Dockerfile includes GitHub CLI, Git, and SSH. It omits the v1-specific
 V2 uses `serve` instead of `web`, still on port 3000. The server runs in the
 foreground, without a background service or public OpenTunnel access.
 
-## Skills and commands
+## Dotfiles sync
 
 Each new pod fetches the latest commit on the dotfiles repository's default branch.
-Push skill or command changes to `oscarli916/dotfiles`, then refresh v2 with:
+It mounts `.config/opencode/skills/`, `commands/`, and `AGENTS.md` read-only under
+`/root/.config/opencode/`. The dotfiles `opencode.json` and `cli.json` are not synced.
+Push skill, command, or global instruction changes to `oscarli916/dotfiles`, then refresh v2 with:
 
 ```sh
 kubectl -n opencode rollout restart deployment/opencode-v2
@@ -50,7 +52,8 @@ kubectl -n opencode rollout restart deployment/opencode-v2
 
 The init container logs the loaded commit SHA. Running pods do not refresh
 automatically, and no image rebuild is needed. If sync fails or exceeds 90 seconds,
-the pod starts without synced skills or commands.
+the pod starts without synced skills, commands, or global instructions. An empty
+`AGENTS.md` keeps the file mount valid when sync fails.
 
 ## One-time GitHub login
 
@@ -84,5 +87,5 @@ kubectl kustomize clusters/homelab/apps/opencode-v2
 ```
 
 After the image is published and Flux deploys the manifests, check the pod,
-both ingress routes, provider login, skills, commands, Git SSH access, and the
+both ingress routes, provider login, skills, commands, global instructions, Git SSH access, and the
 integrated terminal. Confirm v1 remains accessible at its original URLs.

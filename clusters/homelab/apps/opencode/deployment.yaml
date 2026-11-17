@@ -62,6 +62,12 @@ spec:
               else
                 echo "Lync Transfer repository already exists, skipping clone"
               fi
+
+              if [ ! -d /workspace/algo-trading/.git ]; then
+                git clone git@github.com:oscarli916/algo-trading.git /workspace/algo-trading
+              else
+                echo "Algo Trading repository already exists, skipping clone"
+              fi
           volumeMounts:
             - name: workspace
               mountPath: /workspace
